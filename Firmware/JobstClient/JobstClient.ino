@@ -1,5 +1,5 @@
-/* MechCube client v1.1
- * - battery voltage reading fixed
+/* Jobst client v1.2
+ * - Fixed freezing of jobst when connecting more than 2 IMUs
  * 
  * 
  *  Author: Vojtech Mlynar
@@ -97,7 +97,6 @@
 #define HEX_NONE 0x00
 
 #include "SPI_Registers.h"
-//#include "include/MechCubePins.h"
 #include "LegoMotor.h"
 #include "Sensors.h"
 #include "Encoder.h"
@@ -111,14 +110,6 @@ LegoMotor motorD(PWMD,DIRD,CURD,ENCDa,ENCDb);
 LegoMotor motorE(PWME,DIRE,CURE,ENCEa,ENCEb);
 LegoMotor motorF(PWMF,DIRF,CURF,ENCFa,ENCFb);
 
-//Encoder encoderA(ENCAa,ENCAb);
-//Encoder encoderB(ENCBa,ENCBb);
-//Encoder encoderC(ENCCa,ENCCb);
-//Encoder encoderD(ENCDa,ENCDb);
-//Encoder encoderE(ENCEa,ENCEb);
-//Encoder encoderF(ENCFa,ENCFb);
-//
-//volatile char g_counter = 0;
 
 bool led = 1;
 
@@ -172,7 +163,6 @@ void setup() {
 
   
   digitalWrite(LED3PIN,LOW);
-  //Serial.println("Basic init");
   
   for(int i = 0; i <= 12; i++){
     g_sensor1Vals[i] = 0;
@@ -187,7 +177,6 @@ void setup() {
   SPI.begin();
   SPI.beginTransaction(SPISettings(1000000, MSBFIRST, SPI_MODE3));
   delay(150);
-  //Serial.println("SPI init");
   
   messageOut[0] = 0xAA;
   for(int i = 1; i <= MSGOUT_LEN-3; i++){
@@ -258,6 +247,7 @@ void loop() {
 //          Serial.write(messageOut,MSGOUT_LEN);
 //          reconnect--;
 //        }
+
       }
     }      // If anything comes in Serial (USB),
 
@@ -353,14 +343,12 @@ void loop() {
     //parse temperature values
     int temperature = analogRead(TEMPPIN);
     parseIntToBytes(&messageOut[7],temperature);
-    //digitalWrite(LED4PIN, LOW);
     
     //END of parsing 
   }
   else //wrong CRC
   {
     corruptedTicks++;
-    //digitalWrite(LED4PIN, HIGH);
   }
   
   initSkipLabel: //Skip parsing data to avoid overwriting init message

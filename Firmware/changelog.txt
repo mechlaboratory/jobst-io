@@ -1,0 +1,9 @@
+v1.2
+ FIX:
+  - Fixed freezing of Arduino when connecting more than 2 IMUs - Initialization moved to initialization block (incoming from Serial)
+
+v1.1
+ FIX:
+  - Strange behaviour of AnalogRead outside loop() -> fixed by moving functions into loop()
+v1.0
+ - First release
